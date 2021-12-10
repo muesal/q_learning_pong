@@ -2,6 +2,8 @@ import numpy
 import random
 from collections import defaultdict
 
+import numpy as np
+
 
 def reshape_obs(observation):
     """
@@ -13,9 +15,27 @@ def reshape_obs(observation):
     direction of the ball.
     :return: The reshaped/discretized observation
     """
-    # TODO: Discretize/simplify
-    # transformation
-    return f'{numpy.asarray(observation).reshape(-1, 10)}'
+
+    # two decimals for position are enough
+    # reshaped = [numpy.round(observation[0][i], 1) for i in range(4)]
+    # horizontal position of agent is irrelevant (always the same)
+    # del reshaped[1]
+
+    pad_ball_rel = observation[0][0] - observation[0][2]  # negative if ball lower than middle of paddle
+
+    reshaped = [
+        0 if pad_ball_rel == 0 else int(pad_ball_rel / abs(pad_ball_rel)),
+        numpy.round(observation[0][2], 1),
+        numpy.round(observation[0][3], 1),
+    ]
+
+    # get index of ball direction (0 to 5)
+    for i in range(6):
+        if observation[0][4 + i] == 1:
+            reshaped.append(i)
+
+    # returned stringified
+    return str(reshaped)
 
 
 class Agent:
@@ -25,11 +45,11 @@ class Agent:
 
     def __init__(
             self, id, actions_n, obs_space_shape,
-            gamma=1, # pick reasonable values for all of these!
-            epsilon=1,
-            min_epsilon=1,
-            epsilon_decay=1,
-            alpha=1
+            gamma=0.6,  # pick reasonable values for all of these!
+            epsilon=0.2,
+            min_epsilon=0.01,
+            epsilon_decay=0.97,
+            alpha=0.1
     ):
         """
         Initiates the agent
@@ -62,18 +82,30 @@ class Agent:
         array of length of the action space.
         """
         # TODO: implement this!
-        return # action_probabilities
+        obs_key = reshape_obs(observation)
+        return self.q[obs_key]  # action_probabilities
 
     def act(self, observation):
         """
-        Determines and action, given the current observation.
+        Determines an action, given the current observation.
         :param observation: the agent's current observation of the state of
         the world
         :return: the agent's action
         """
-        # TODO: implement this! Here, you will need to call
-        # `determine_action_probabilities(observation)`
-        return random.randint(0,2)
+
+        probs = self.determine_action_probabilities(observation)
+
+        # explore if all null or with probability epsilon or return action with highest reward
+        if not any(probs) or random.random() < self.epsilon:
+            action = random.randint(0, 2)
+        else:
+            action = np.argmax(probs)  # index of action with best reward
+
+        # decay epsilon
+        if self.epsilon > self.min_epsilon:
+            self.epsilon *= self.epsilon_decay
+
+        return action
 
     def update_history(
             self, observation, action, reward, new_observation
@@ -88,8 +120,9 @@ class Agent:
         :return:
         """
         # counterfactual next action, to later backpropagate reward to current action
-        next_action = numpy.argmax(self.q[reshape_obs(new_observation)])
-        td_target = reward + self.gamma * self.q[reshape_obs(new_observation)][next_action]
-        td_delta = td_target - self.q[reshape_obs(observation)][action]
-        self.q[reshape_obs(observation)][action] += self.alpha * td_delta
+        new_obs_key = reshape_obs(new_observation)
+        obs_key = reshape_obs(observation)
+        max_action_key = numpy.argmax(self.q[new_obs_key])  # 0, 1 or 2
 
+        td_delta = reward + self.gamma * self.q[new_obs_key][max_action_key] - self.q[obs_key][action]
+        self.q[obs_key][action] += self.alpha * td_delta

@@ -20,7 +20,7 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Pong simulator for ma-gym')
     parser.add_argument('--env', default='PongDuel-v0',
                         help='Name of the environment (default: %(default)s)')
-    parser.add_argument('--episodes', type=int, default=550,
+    parser.add_argument('--episodes', type=int, default=360,
                         help='episodes (default: %(default)s)')
     args = parser.parse_args()
 
