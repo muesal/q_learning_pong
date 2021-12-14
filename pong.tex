@@ -11,6 +11,7 @@
 \usepackage{graphicx}
 \usepackage{algorithm}
 \usepackage[noend]{algpseudocode}
+\usepackage{hyperref}
 \floatname{algorithm}{Algorithm}
 \newcommand{\todo}[1]{{\color{red}#1}}
 
@@ -21,11 +22,11 @@
 \begin{document}
 
 %% Make the title
-\maketitle
+    \maketitle
 
-\todo{add course number to title}
+    \todo{add course number to title}
 
-\todo{
+    \todo{
     Write a short report (one page) section that describes:
     \begin{itemize}
         \item how you proceeded, i.e. describe your solution approach conceptually and precisely;\\
@@ -33,8 +34,44 @@
         \item how you could improve further, i.e. describe and motivate potential improvements.\\
     \end{itemize}
 
-}
+    }
 
-\todo{merge with multi-armed bandit}
+    \todo{merge with multi-armed bandit}
 
+    \pagebreak
+
+
+    \section{Pong}\label{sec:pong}
+    Next, we describe how we improved our pong-playing agent, what results our agent was able to achieve, and how it could be further optimized.
+
+    \subsection{Improving the Agent}\label{subsec:improving-the-agent}
+    Improving the agent consisted mostly of two parts: implementing a reasonable abstraction for the state space and tuning all the parameters.
+
+    \subsubsection{Choosing a State-Space Abstraction}
+    Our final state-space abstraction was developed iteratively.
+    We started by deciding that we only want to focus on the positional data for our own agent and therefore disregard the two data points for the opponent's position.
+    Also, since our agent does not move horizontally, we only used its vertical position.
+    To simplify things even further, we decided to look only at the relative vertical position of our agent's paddle and the ball:
+
+    \[\mathit{rel\_pos} = \begin{cases}
+                              1 & \mathit{paddle\_pos} > \mathit{ball\_pos} \\
+                              0 & \mathit{paddle\_pos} = \mathit{ball\_pos} \\
+                              -1 & \mathit{paddle\_pos} < \mathit{ball\_pos}
+    \end{cases}
+    \]
+
+    Additionally, we added both coordinates of the ball to the state representation, rounded to one decimal point.
+    Finally, our state representation contains an integer between 0 and 5, representing one of the six possible directions of the ball.
+    After all this simplification, a game state had the following form,\[\texttt{'[-1, 0.5, 0.5, 2]'},\] which in our experiments led the Q-table to have around 666 entries after about 350 episodes.
+
+    \subsubsection{Tuning Parameters}
+    In order to start with the parameter tuning from a reasonable point, we used the $\alpha$, $\gamma$ and $\epsilon$ values from the provided \href{https://www.learndatasci.com/tutorials/reinforcement-q-learning-scratch-python-openai-gym/}{tutorial} for our agent.
+    We discovered that with an $\epsilon$ value of 0.2, our agent performed even better, so we changed it.
+    For the minimum $\epsilon$ and the $\epsilon$-decay values, we decided to go with the same values as we used in the multi-armed bandit assignment.
+    As our agent was already performing very good at that stage, achieving a value of around 2000 for \texttt{wins - losses} after about 350 episodes, we decided to not change the parameters further.
+    Finally, our parameter tuning resolved in the following values for our parameters:
+    \[\alpha = 0.1, \gamma = 0.6, \epsilon = 0.2, \epsilon_\mathit{min} = 0.01, \epsilon_\mathit{decay} = 0.97.\]
+
+    \subsection{Results}\label{subsec:results}
+    \subsection{Further Optimization}\label{subsec:further-optimization}
 \end{document}
