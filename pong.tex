@@ -68,10 +68,15 @@
     In order to start with the parameter tuning from a reasonable point, we used the $\alpha$, $\gamma$ and $\epsilon$ values from the provided \href{https://www.learndatasci.com/tutorials/reinforcement-q-learning-scratch-python-openai-gym/}{tutorial} for our agent.
     We discovered that with an $\epsilon$ value of 0.2, our agent performed even better, so we changed it.
     For the minimum $\epsilon$ and the $\epsilon$-decay values, we decided to go with the same values as we used in the multi-armed bandit.
-    As our agent was already performing very good at that stage, achieving a value of around 2000 for \texttt{wins - losses} after about 350 episodes, we decided to not change the parameters further.
+    As our agent was already performing very good at that stage, achieving a score of around 2000 for \textit{wins - losses} after about 350 episodes, we decided to not change the parameters further.
     Finally, our parameter tuning resolved in the following values for our parameters:
     \[\alpha = 0.1, \gamma = 0.6, \epsilon = 0.2, \epsilon_\mathit{min} = 0.01, \epsilon_\mathit{decay} = 0.97.\]
 
     \subsection{Results}\label{subsec:pong-results}
+    With our state space discretization and our tuned parameters, our pong agent was able to achieve a \textit{wins - losses} score of around 2000 after 350 episodes.
+    Since the goal was a score of at least 1000 at that stage, we were satisfied with our results and did not improve the agent further.
+
     \subsection{Further Optimization}\label{subsec:pong-further-optimization}
+    Our pong agent possibly could be improved by testing out combinations of a wider range of parameters systematically with a script.
+    Also, testing alternative state space abstractions could improve the agent.
 \end{document}
