@@ -50,7 +50,7 @@
     \subsubsection{Choosing a State-Space Abstraction}
     Our final state-space abstraction was developed iteratively.
     We started by deciding that we only want to focus on the positional data for our own agent and therefore disregard the two data points for the opponent's position.
-    Also, since our agent does not move horizontally, we only used its vertical position.
+    Also, since our agent does not move horizontally, we only used its vertical coordinate.
     To simplify things even further, we decided to look only at the relative vertical position of our agent's paddle and the ball:
 
     \[\mathit{rel\_pos} = \begin{cases}
@@ -62,7 +62,7 @@
 
     Additionally, we added both coordinates of the ball to the state representation, rounded to one decimal point.
     Finally, our state representation contains an integer between 0 and 5, representing one of the six possible directions of the ball.
-    After all this simplification, a game state had the following form,\[\texttt{'[-1, 0.5, 0.5, 2]'},\] which in our experiments led the Q-table to have around 666 entries after about 350 episodes.
+    After all this simplification, a game state had the following form,\[\texttt{\lq[-1, 0.5, 0.5, 2]\rq},\] which in one of our experiments led the Q-table to have 666 entries after 350 episodes.
 
     \subsubsection{Tuning Parameters}
     In order to start with the parameter tuning from a reasonable point, we used the $\alpha$, $\gamma$ and $\epsilon$ values from the provided \href{https://www.learndatasci.com/tutorials/reinforcement-q-learning-scratch-python-openai-gym/}{tutorial} for our agent.
